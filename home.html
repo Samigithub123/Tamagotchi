@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Tamagotchi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="tamagotchi">
+        <div class="face">
+            <span class="emoji" id="emoji">🙂</span> <!-- Emoji die verandert als Tamagotchi slaapt -->
+        </div>
+    </div>
+    <div class="status">
+        <div class="status-label">Honger <span id="hunger-value">0%</span></div>
+        <div class="hunger-bar">
+            <div class="hunger-fill" id="hunger-fill"></div>
+        </div>
+        <div class="status-label">Energie <span id="energy-value">100%</span></div>
+        <div class="energy-bar">
+            <div class="energy-fill" id="energy-fill"></div>
+        </div>
+        <div class="status-label">Plezier <span id="fun-value">50%</span></div>
+        <div class="fun-bar">
+            <div class="fun-fill" id="fun-fill"></div>
+        </div>
+    </div>
+    <button onclick="feed()">Voer</button>
+    <button onclick="play()">Speel</button>
+    <button onclick="toggleSleep()" id="sleep-button">Licht Uit</button>
+</div>
+
+<script src='Javascript.js'></script>
+</body>
+</html>
