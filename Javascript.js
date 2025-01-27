@@ -4,15 +4,25 @@ let fun = 5;
 let isSleeping = false;
 let interval;
 
+// Functie om een bericht aan de chat toe te voegen
+function addChatMessage(message) {
+    const chatBox = document.getElementById('chat-box');
+    const newMessage = document.createElement('div');
+    newMessage.textContent = message;
+    newMessage.classList.add('chat-message');
+    chatBox.appendChild(newMessage);
+
+    // Scroll automatisch naar de nieuwste boodschap
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Pas de status aan en toon berichten in de chat
 function updateStatus() {
     const hungerFill = document.getElementById('hunger-fill');
-    const hungerText = document.getElementById('hunger-text');
-    const energyFill = document.getElementById('energy-fill');
-    const energyText = document.getElementById('energy-text');
-    const funFill = document.getElementById('fun-fill');
-    const funText = document.getElementById('fun-text');
     const hungerValue = document.getElementById('hunger-value');
+    const energyFill = document.getElementById('energy-fill');
     const energyValue = document.getElementById('energy-value');
+    const funFill = document.getElementById('fun-fill');
     const funValue = document.getElementById('fun-value');
     const emoji = document.getElementById('emoji');
 
@@ -29,19 +39,25 @@ function updateStatus() {
     funFill.style.width = `${funPercentage}%`;
     funValue.textContent = `${funPercentage}%`;
 
-    // Emoji aanpassen op basis van slaap en plezier
+    // Emoji en chatbericht aanpassen
     if (isSleeping) {
-        emoji.textContent = '😴'; // Slapende emoji
+        emoji.textContent = '😴';
+        addChatMessage('Tamagotchi is in slaap gevallen.');
     } else if (funPercentage <= 30) {
-        emoji.textContent = '🙁'; // Verdrietige emoji bij lage plezier
+        emoji.textContent = '🙁';
+        addChatMessage('Tamagotchi is verdrietig.');
     } else if (energyPercentage <= 20) {
-        emoji.textContent = '😪'; // slaperige emoji bij lage energie
+        emoji.textContent = '😪';
+        addChatMessage('Tamagotchi is erg moe.');
     } else {
-        emoji.textContent = '🙂'; // Normale emoji
+        emoji.textContent = '🙂';
+        addChatMessage('Tamagotchi voelt zich blij.');
     }
 
+    // Eindcondities controleren
     if (hunger >= 10) {
         alert('Je Tamagotchi is te hongerig en is verdwenen!');
+        addChatMessage('Tamagotchi is verdwenen door honger.');
         clearInterval(interval);
         hunger = 0;
         updateStatus();
@@ -49,17 +65,20 @@ function updateStatus() {
 
     if (energy <= 0) {
         alert('Je Tamagotchi is te moe en kan niet meer bewegen!');
+        addChatMessage('Tamagotchi is uitgeput.');
         clearInterval(interval);
     }
 
     if (fun <= 0) {
         alert('Je Tamagotchi is verdrietig en heeft geen plezier meer!');
+        addChatMessage('Tamagotchi is gestopt met spelen.');
         clearInterval(interval);
     }
 }
 
 function feed() {
     hunger = Math.max(0, hunger - 2);
+    addChatMessage('Je hebt Tamagotchi gevoerd.');
     updateStatus();
 }
 
@@ -68,6 +87,7 @@ function play() {
         hunger = Math.min(10, hunger + 1);
         energy = Math.max(0, energy - 2);
         fun = Math.min(10, fun + 2);
+        addChatMessage('Je speelt met Tamagotchi.');
         updateStatus();
     }
 }
@@ -80,6 +100,7 @@ function toggleSleep() {
         isSleeping = false;
         sleepButton.textContent = 'Licht Uit';
         body.classList.remove('dark-mode');
+        addChatMessage('Tamagotchi is wakker.');
         interval = setInterval(() => {
             hunger++;
             energy = Math.max(0, energy - 1);
@@ -90,6 +111,7 @@ function toggleSleep() {
         isSleeping = true;
         sleepButton.textContent = 'Licht Aan';
         body.classList.add('dark-mode');
+        addChatMessage('Tamagotchi gaat slapen.');
         clearInterval(interval);
         const sleepInterval = setInterval(() => {
             if (!isSleeping) {
