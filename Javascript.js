@@ -4,7 +4,7 @@ let fun = 5;
 let isSleeping = false;
 let interval;
 
-// Functie om een bericht aan de chat toe te voegen
+// Voeg een bericht toe aan de chat
 function addChatMessage(message) {
     const chatBox = document.getElementById('chat-box');
     const newMessage = document.createElement('div');
@@ -12,11 +12,47 @@ function addChatMessage(message) {
     newMessage.classList.add('chat-message');
     chatBox.appendChild(newMessage);
 
-    // Scroll automatisch naar de nieuwste boodschap
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Pas de status aan en toon berichten in de chat
+// Controleer of het spel game over is
+function checkGameOver() {
+    if (hunger >= 10) {
+        showGameOver('Tamagotchi is gestorven door honger!');
+        return true;
+    }
+    if (energy <= 0) {
+        showGameOver('Tamagotchi heeft geen energie meer!');
+        return true;
+    }
+    if (fun <= 0) {
+        showGameOver('Tamagotchi werd te verdrietig!');
+        return true;
+    }
+    return false;
+}
+
+// Toont het Game Over scherm
+function showGameOver(message) {
+    document.getElementById('game-over-message').textContent = message;
+    document.getElementById('game-over-screen').classList.remove('hidden');
+    clearInterval(interval); // Stop de game loop
+}
+
+// Start het spel opnieuw
+function restartGame() {
+    hunger = 0;
+    energy = 10;
+    fun = 5;
+    isSleeping = false;
+
+    document.getElementById('game-over-screen').classList.add('hidden');
+
+    updateStatus();
+    startGameLoop();
+}
+
+// Update de balken en emoji's
 function updateStatus() {
     const hungerFill = document.getElementById('hunger-fill');
     const hungerValue = document.getElementById('hunger-value');
@@ -26,62 +62,40 @@ function updateStatus() {
     const funValue = document.getElementById('fun-value');
     const emoji = document.getElementById('emoji');
 
-    const hungerPercentage = Math.min(100, Math.max(0, hunger * 10));
-    const energyPercentage = Math.min(100, Math.max(0, energy * 10));
-    const funPercentage = Math.min(100, Math.max(0, fun * 10));
+    hungerFill.style.width = `${hunger * 10}%`;
+    hungerValue.textContent = `${hunger * 10}%`;
 
-    hungerFill.style.width = `${hungerPercentage}%`;
-    hungerValue.textContent = `${hungerPercentage}%`;
+    energyFill.style.width = `${energy * 10}%`;
+    energyValue.textContent = `${energy * 10}%`;
 
-    energyFill.style.width = `${energyPercentage}%`;
-    energyValue.textContent = `${energyPercentage}%`;
+    funFill.style.width = `${fun * 10}%`;
+    funValue.textContent = `${fun * 10}%`;
 
-    funFill.style.width = `${funPercentage}%`;
-    funValue.textContent = `${funPercentage}%`;
+    if (checkGameOver()) return; // Controleer game over ná update
 
-    // Emoji en chatbericht aanpassen
     if (isSleeping) {
         emoji.textContent = '😴';
         addChatMessage('Tamagotchi is in slaap gevallen.');
-    } else if (funPercentage <= 30) {
+    } else if (fun <= 3) {
         emoji.textContent = '🙁';
         addChatMessage('Tamagotchi is verdrietig.');
-    } else if (energyPercentage <= 20) {
+    } else if (energy <= 2) {
         emoji.textContent = '😪';
         addChatMessage('Tamagotchi is erg moe.');
     } else {
         emoji.textContent = '🙂';
         addChatMessage('Tamagotchi voelt zich blij.');
     }
-
-    // Eindcondities controleren
-    if (hunger >= 10) {
-        alert('Je Tamagotchi is te hongerig en is verdwenen!');
-        addChatMessage('Tamagotchi is verdwenen door honger.');
-        clearInterval(interval);
-        hunger = 0;
-        updateStatus();
-    }
-
-    if (energy <= 0) {
-        alert('Je Tamagotchi is te moe en kan niet meer bewegen!');
-        addChatMessage('Tamagotchi is uitgeput.');
-        clearInterval(interval);
-    }
-
-    if (fun <= 0) {
-        alert('Je Tamagotchi is verdrietig en heeft geen plezier meer!');
-        addChatMessage('Tamagotchi is gestopt met spelen.');
-        clearInterval(interval);
-    }
 }
 
+// Voer Tamagotchi
 function feed() {
     hunger = Math.max(0, hunger - 2);
     addChatMessage('Je hebt Tamagotchi gevoerd.');
     updateStatus();
 }
 
+// Speel met Tamagotchi
 function play() {
     if (energy > 0) {
         hunger = Math.min(10, hunger + 1);
@@ -92,6 +106,7 @@ function play() {
     }
 }
 
+// Slaapfunctie
 function toggleSleep() {
     const sleepButton = document.getElementById('sleep-button');
     const body = document.body;
@@ -101,12 +116,7 @@ function toggleSleep() {
         sleepButton.textContent = 'Licht Uit';
         body.classList.remove('dark-mode');
         addChatMessage('Tamagotchi is wakker.');
-        interval = setInterval(() => {
-            hunger++;
-            energy = Math.max(0, energy - 1);
-            fun = Math.max(0, fun - 1);
-            updateStatus();
-        }, 10000);
+        startGameLoop();
     } else {
         isSleeping = true;
         sleepButton.textContent = 'Licht Aan';
@@ -123,13 +133,34 @@ function toggleSleep() {
         }, 1000);
     }
 }
+function toggleMusic() {
+    const music = document.getElementById("background-music");
 
-// Simuleer honger en plezier over tijd
-interval = setInterval(() => {
-    hunger++;
-    energy = Math.max(0, energy - 1);
-    fun = Math.max(0, fun - 1);
-    updateStatus();
-}, 10000);
+    if (!music) {
+        console.log("Audio-element niet gevonden!");
+        return;
+    }
 
+    if (music.paused) {
+        music.play().catch(error => console.log("Autoplay geblokkeerd:", error));
+    } else {
+        music.pause();
+    }
+}
+
+// Start de game loop, met wachttijd voor de eerste tick
+function startGameLoop() {
+    clearInterval(interval);
+    setTimeout(() => { // Wacht even voor eerste tick
+        interval = setInterval(() => {
+            hunger++;
+            energy = Math.max(0, energy - 1);
+            fun = Math.max(0, fun - 1);
+            updateStatus();
+        }, 10000);
+    }, 5000); // Start pas na 5 seconden om direct game over te voorkomen
+}
+
+// Start het spel correct zonder direct game over
 updateStatus();
+startGameLoop();

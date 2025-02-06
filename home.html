@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Tamagotchi</title>
+    <title>Tamagotchi</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
     <div class="tamagotchi">
         <div class="face">
-            <span class="emoji" id="emoji">🙂</span> <!-- Emoji die verandert als Tamagotchi slaapt -->
+            <span class="emoji" id="emoji">🙂</span> <!-- Emoji die verandert als Tamagotchi's emotie veranderd -->
         </div>
     </div>
     <div class="status">
@@ -31,13 +31,24 @@
     <button onclick="play()">Speel</button>
     <button onclick="toggleSleep()" id="sleep-button">Licht Uit</button>
 
-    <!-- Chatvenster toegevoegd -->
+
     <div class="chat">
         <div id="chat-box">
-            <!-- Statusupdates verschijnen hier -->
+
         </div>
     </div>
 </div>
+<audio id="background-music" loop>
+    <source src="background-music.mp3" type="audio/mp3">
+</audio>
+<button onclick="toggleMusic()">🎵 Speel / Pauzeer Muziek</button>
+
+<div id="game-over-screen" class="hidden">
+    <h2>Game Over</h2>
+    <p id="game-over-message"></p>
+    <button onclick="restartGame()">Opnieuw Spelen</button>
+</div>
+
 
 <script src='Javascript.js'></script>
 </body>
